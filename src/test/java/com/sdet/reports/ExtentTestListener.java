@@ -43,18 +43,12 @@ public class ExtentTestListener implements ITestListener {
     
 @Override
 public void onTestFailure(ITestResult result) {
-
     ExtentTest test = currentTest.get();
 
     if (test != null) {
         test.fail(result.getThrowable());
     }
-
-    // Do not remove currentTest here.
-    // BaseTest still needs it to attach the screenshot.
-
-        currentTest.remove();
-    }
+}
 
     @Override
     public void onTestSkipped(ITestResult result) {
@@ -73,16 +67,37 @@ public void onTestFailure(ITestResult result) {
 
         ExtentReportManager.getInstance().flush();
     }
+    
+
 public static void attachScreenshot(String screenshotPath) {
 
     ExtentTest test = currentTest.get();
 
-    if (test != null) {
-        try {
-            test.addScreenCaptureFromPath(screenshotPath);
-        } catch (Exception e) {
-            test.warning("Screenshot attachment failed: " + e.getMessage());
-        }
+    if (test == null) {
+        System.err.println(
+            "ERROR: ExtentTest reference is null. "
+            + "Screenshot not attached: " + screenshotPath
+        );
+        return;
     }
+
+    try {
+        test.addScreenCaptureFromPath(screenshotPath);
+
+        System.out.println(
+            "SUCCESS: Screenshot attachment registered: "
+            + screenshotPath
+        );
+
+    } catch (Exception e) {
+        System.err.println(
+            "ERROR: Screenshot attachment failed: "
+            + e.getMessage()
+        );
+        e.printStackTrace();
+    }
+}
+public static void clearCurrentTest() {
+    currentTest.remove();
 }
 }

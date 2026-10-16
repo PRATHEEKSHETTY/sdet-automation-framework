@@ -8,6 +8,7 @@ import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
+import io.restassured.filter.log.LogDetail;
 
 public class ApiSpecFactory {
 
@@ -17,6 +18,7 @@ public class ApiSpecFactory {
                 .setBaseUri(ConfigReader.get("api.base.url"))
                 .setContentType(ContentType.JSON)
                 .setAccept(ContentType.JSON)
+                .log(LogDetail.ALL)
                 .build();
     }
 

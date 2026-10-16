@@ -36,7 +36,9 @@ public class BaseTest {
         browser = playwright.chromium().launch(
             new BrowserType.LaunchOptions()
                 .setHeadless(
-                    Boolean.parseBoolean(ConfigReader.get("headless"))
+                    Boolean.parseBoolean(
+                        ConfigReader.get("headless")
+                    )
                 )
         );
 
@@ -44,14 +46,19 @@ public class BaseTest {
         page = context.newPage();
 
         logger.info("Navigating to SauceDemo");
-        page.navigate(ConfigReader.get("ui.base.url"));
+
+        page.navigate(
+            ConfigReader.get("ui.base.url")
+        );
     }
 
     @AfterMethod(alwaysRun = true)
     public void tearDown(ITestResult result) {
 
         try {
-            if (result.getStatus() == ITestResult.FAILURE && page != null) {
+
+            if (result.getStatus() == ITestResult.FAILURE
+                    && page != null) {
 
                 logger.error(
                     "Test failed: {}",
@@ -59,19 +66,23 @@ public class BaseTest {
                     result.getThrowable()
                 );
 
+                // Create screenshot directory
                 Path screenshotDirectory = Paths.get(
                     "target", "screenshots"
                 );
 
                 Files.createDirectories(screenshotDirectory);
 
+                // Generate unique screenshot filename
                 String fileName = result.getName()
-                    + "_" + System.currentTimeMillis()
+                    + "_"
+                    + System.currentTimeMillis()
                     + ".png";
 
                 Path screenshotPath =
                     screenshotDirectory.resolve(fileName);
 
+                // Capture screenshot
                 page.screenshot(
                     new Page.ScreenshotOptions()
                         .setPath(screenshotPath)
@@ -82,23 +93,45 @@ public class BaseTest {
                     "Screenshot saved: {}",
                     screenshotPath
                 );
+
+                // Attach screenshot to Extent HTML report
                 ExtentTestListener.attachScreenshot(
-    "screenshots/" + fileName
-);
+                    "screenshots/" + fileName
+                );
             }
 
         } catch (Exception e) {
-            logger.error("Failed to capture screenshot", e);
+
+            logger.error(
+                "Failed to capture or attach screenshot",
+                e
+            );
 
         } finally {
 
             logger.info("Closing browser resources");
 
-            if (context != null) context.close();
-            if (browser != null) browser.close();
-            if (playwright != null) playwright.close();
+            try {
 
-            logger.info("UI test cleanup completed");
+                if (context != null) {
+                    context.close();
+                }
+
+                if (browser != null) {
+                    browser.close();
+                }
+
+                if (playwright != null) {
+                    playwright.close();
+                }
+
+            } finally {
+
+                // Clear reporting reference after screenshot attachment
+                ExtentTestListener.clearCurrentTest();
+
+                logger.info("UI test cleanup completed");
+            }
         }
     }
 }

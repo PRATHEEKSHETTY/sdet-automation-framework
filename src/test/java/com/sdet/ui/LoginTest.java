@@ -21,8 +21,8 @@ public class LoginTest extends BaseTest {
         page.url().contains("inventory.html"),
         "User should navigate to the inventory page"
 );
-
 //For screen Shot verification 
+        //Assert.fail("Verify Extent screenshot attachment");
 // Assert.assertTrue(
 //     page.url().contains("wrong-page.html"),
 //     "Intentional failure to verify screenshot attachment"
