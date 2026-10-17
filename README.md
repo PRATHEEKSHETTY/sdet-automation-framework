@@ -165,7 +165,7 @@ using class-level parallel execution.
 | Errors | **0** |
 | Skipped | **0** |
 | Maven result | **BUILD SUCCESS** |
-| Total build time | **18.000 seconds** |
+| Total build time | **17.208 seconds** |
 
 ### Grouped Suite Results
 
