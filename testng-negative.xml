@@ -19,6 +19,7 @@
             <class name="com.sdet.ui.LoginTest"/>
             <class name="com.sdet.ui.CheckoutTest"/>
             <class name="com.sdet.api.PostsApiTest"/>
+            <class name="com.sdet.api.AuthApiTest"/>
         </classes>
 
     </test>

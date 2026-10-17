@@ -18,6 +18,7 @@ A Java 17 UI and API test automation framework using **Playwright for Java, REST
 
 - **UI:** [SauceDemo](https://www.saucedemo.com/) — login, shopping cart and checkout.
 - **API:** [JSONPlaceholder](https://jsonplaceholder.typicode.com/) — simulated post CRUD operations.
+- **Authentication API:** https://dummyjson.com/ — Negative authentication and required-field validation.
 
 ## Architecture
 
@@ -53,7 +54,7 @@ UI tests create a new Playwright browser, context and page during setup and clos
 The three required-field validation cases and two boundary-value
 cases are executed using TestNG `@DataProvider`.
 
-### API — 10 executions
+### API — 13 executions
 
 | Scenario | Expected behavior |
 |---|---|
@@ -67,6 +68,9 @@ cases are executed using TestNG `@DataProvider`.
 | POST malformed JSON | Observed HTTP 500 with syntax-error response |
 | GET post with ID 0 | HTTP 404 |
 | GET post with ID -1 | HTTP 404 |
+| POST login with invalid password | HTTP 400 — Invalid credentials |
+| POST login without password | HTTP 400 — Username and password required |
+| POST login without username | HTTP 400 — Username and password required |
 
 
 **API limitation:** JSONPlaceholder is a fake REST API. Write operations are simulated and do not permanently modify server data. Its acceptance of missing fields and its response to malformed JSON are **characterization tests**, not proof of appropriate production input validation. The malformed-JSON response may change if the service changes.
@@ -108,8 +112,8 @@ Execute grouped suites:
 | Suite | Command | Last verified executions |
 |---|---|---:|
 | Smoke | `mvn clean test -Dsurefire.suiteXmlFiles=testng-smoke.xml` | 4 |
-| Regression | `mvn clean test -Dsurefire.suiteXmlFiles=testng-regression.xml` | 6 |
-| Negative | `mvn clean test -Dsurefire.suiteXmlFiles=testng-negative.xml` | 9 |
+| Regression | `mvn clean test -Dsurefire.suiteXmlFiles=testng-regression.xml` | 9 |
+| Negative | `mvn clean test -Dsurefire.suiteXmlFiles=testng-negative.xml` | 12 |
 
 
 The group suites select tests using TestNG group annotations. Group totals overlap; they must not be added to infer total unique tests.
@@ -145,24 +149,33 @@ Maven Surefire results are stored in `target/surefire-reports/`. On failed UI te
 
 Because the `target/` directory is typically ignored by Git, include **sample test outputs** separately in the assignment submission if required. Run the full suite before copying any reports or screenshots into the submission package.
 
+
 ## Latest Verified Results
 
-Full suite executed on **17 October 2026** using
-class-level parallel execution.
+Full suite executed on **17 October 2026**
+using class-level parallel execution.
 
 | Metric | Result |
 |---|---|
 | UI test executions | 9 |
-| API test executions | 10 |
-| Total executions | **19** |
-| Passed | **19** |
+| API test executions | 13 |
+| Total test executions | **22** |
+| Passed | **22** |
 | Failed | **0** |
 | Errors | **0** |
 | Skipped | **0** |
 | Maven result | **BUILD SUCCESS** |
-| Total build time | **20.449 seconds** |
+| Total build time | **18.000 seconds** |
 
-The independently executed smoke, regression, and negative suites passed with 4, 6, and 9 test executions respectively.
+### Grouped Suite Results
+
+| Suite | Tests | Failures | Result |
+|---|---:|---:|---|
+| Smoke | 4 | 0 | BUILD SUCCESS |
+| Regression | 9 | 0 | BUILD SUCCESS |
+| Negative | 12 | 0 | BUILD SUCCESS |
+
+**Note:** Grouped suites contain overlapping test cases. Their execution counts should not be added together.
 
 All grouped suites completed successfully with zero failures.
 
