@@ -3,8 +3,10 @@ package com.sdet.ui;
 
 import com.sdet.base.BaseTest;
 import com.sdet.pages.LoginPage;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
 public class LoginTest extends BaseTest {
@@ -16,17 +18,14 @@ public class LoginTest extends BaseTest {
 
         loginPage.login("standard_user", "secret_sauce");
 
-        assertThat(page).hasURL("https://www.saucedemo.com/inventory.html");
+        assertThat(page).hasURL(
+            "https://www.saucedemo.com/inventory.html"
+        );
+
         Assert.assertTrue(
-        page.url().contains("inventory.html"),
-        "User should navigate to the inventory page"
-);
-//For screen Shot verification 
-        //Assert.fail("Verify Extent screenshot attachment");
-// Assert.assertTrue(
-//     page.url().contains("wrong-page.html"),
-//     "Intentional failure to verify screenshot attachment"
-// );
+            page.url().contains("inventory.html"),
+            "User should navigate to the inventory page"
+        );
     }
 
     @Test(groups = {"ui", "negative"})

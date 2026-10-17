@@ -25,6 +25,30 @@ public class CheckoutPage {
         page.locator("[data-test='continue']").click();
     }
 
+    // Checkout overview validation methods
+
+    public boolean isCheckoutOverviewDisplayed() {
+        return page.url().contains("checkout-step-two.html");
+    }
+
+    public String getOverviewProductName() {
+        return page.locator(
+            "[data-test='inventory-item-name']"
+        ).innerText();
+    }
+
+    public String getOverviewProductPrice() {
+        return page.locator(
+            "[data-test='inventory-item-price']"
+        ).innerText();
+    }
+
+    public String getOverviewProductQuantity() {
+        return page.locator(
+            "[data-test='item-quantity']"
+        ).innerText();
+    }
+
     public void clickFinish() {
         page.locator("[data-test='finish']").click();
     }

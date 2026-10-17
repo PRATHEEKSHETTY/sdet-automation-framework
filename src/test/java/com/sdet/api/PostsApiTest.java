@@ -1,4 +1,3 @@
-
 package com.sdet.api;
 
 import com.sdet.clients.PostsApiClient;
@@ -13,7 +12,7 @@ import org.testng.annotations.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PostsApiTest{
+public class PostsApiTest {
 
     private final PostsApiClient client = new PostsApiClient();
 
@@ -203,6 +202,51 @@ public class PostsApiTest{
                 response.getBody().asString().trim(),
                 "{}",
                 "Invalid post should return an empty JSON object"
+        );
+    }
+
+    @Test(groups = {"api", "negative"})
+    public void createPostWithMissingFieldsTest() {
+
+        // Empty payload: title, body and userId are missing.
+        Map<String, Object> payload = new HashMap<>();
+
+        Response response = client.createPost(payload);
+
+        // JSONPlaceholder is a mock API and may accept
+        // incomplete payloads instead of rejecting them.
+        response.then()
+                .spec(ApiSpecFactory.responseSpec(201));
+
+        Assert.assertNotNull(
+                response.jsonPath().get("id"),
+                "Mock API should return a generated post ID"
+        );
+
+        System.out.println(
+                "Known API limitation: JSONPlaceholder accepts " +
+                "a POST request with missing fields."
+        );
+    }
+
+    @Test(groups = {"api", "negative"})
+    public void createPostWithMalformedJsonTest() {
+
+        String invalidJson = "{\"title\":\"Test Post";
+
+        Response response = client.createPost(invalidJson);
+
+        response.then()
+                .spec(ApiSpecFactory.responseSpec(500));
+
+        Assert.assertTrue(
+                response.getBody().asString().contains("SyntaxError"),
+                "Response should contain a JSON parsing error"
+        );
+
+        System.out.println(
+                "Known API limitation: JSONPlaceholder returns " +
+                "HTTP 500 instead of HTTP 400 for malformed JSON."
         );
     }
 }

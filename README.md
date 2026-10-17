@@ -22,9 +22,9 @@ A Java 17 UI and API test automation framework using **Playwright for Java, REST
 ## Architecture
 
 - `src/main/java/com/sdet/pages/` — UI page objects and interactions.
-- `src/main/java/com/sdet/clients/` — reusable REST API request methods.
-- `src/main/java/com/sdet/specs/` — API request and response specifications.
-- `src/main/java/com/sdet/payloads/` — API payload models.
+- `src/test/java/com/sdet/clients/` — reusable REST API request methods.
+- `src/test/java/com/sdet/specs/` — API request and response specifications.
+- `src/test/java/com/sdet/payloads/` — API payload models.
 - `src/main/java/com/sdet/config/` — configuration reading.
 - `src/test/java/com/sdet/base/` — UI test setup and teardown.
 - `src/test/java/com/sdet/ui/` — UI scenarios.

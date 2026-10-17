@@ -17,6 +17,18 @@ public class CartPage {
         ).innerText();
     }
 
+    public String getProductPrice() {
+        return page.locator(
+            ".cart_item .inventory_item_price"
+        ).innerText();
+    }
+
+    public String getProductQuantity() {
+        return page.locator(
+            ".cart_item .cart_quantity"
+        ).innerText();
+    }
+
     public void clickCheckout() {
         page.locator("[data-test='checkout']").click();
     }

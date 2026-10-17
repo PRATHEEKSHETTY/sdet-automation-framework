@@ -75,9 +75,9 @@ public class BaseTest {
 
                 // Generate unique screenshot filename
                 String fileName = result.getName()
-                    + "_"
-                    + System.currentTimeMillis()
-                    + ".png";
+                + "_"
+                 + java.util.UUID.randomUUID()
+                 + ".png";
 
                 Path screenshotPath =
                     screenshotDirectory.resolve(fileName);

@@ -17,3 +17,8 @@ target/
 .env.*
 
 echo "sdet-framework-review.zip" >> .gitignore
+
+/SDET_Automation_Framework_Submission.zip
+/submission-evidence/
+/SDET_Automation_Framework_Submission.zip
+/submission-evidence/

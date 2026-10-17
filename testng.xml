@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
 
-<suite name="SDET Automation Suite" parallel="false">
+<suite name="SDET Automation Suite"
+       parallel="classes"
+       thread-count="2">
 
     <listeners>
         <listener class-name="com.sdet.reports.ExtentTestListener"/>
     </listeners>
 
-    <test name="UI and API Tests">
+    <test name="Complete UI and API Test Suite">
         <classes>
             <class name="com.sdet.ui.LoginTest"/>
             <class name="com.sdet.ui.CheckoutTest"/>

@@ -22,82 +22,123 @@ public class CheckoutTest extends BaseTest {
         CartPage cartPage = new CartPage(page);
         CheckoutPage checkoutPage = new CheckoutPage(page);
 
+        // Login
         loginPage.login("standard_user", "secret_sauce");
 
+        // Add product to cart
         inventoryPage.addBackpackToCart();
         inventoryPage.openCart();
 
+        // Verify cart page
         Assert.assertTrue(
-            page.url().contains("cart.html"),
-            "User should navigate to the cart page"
+                page.url().contains("cart.html"),
+                "User should navigate to the cart page"
+        );
+
+        // Verify cart product details
+        Assert.assertEquals(
+                cartPage.getProductName(),
+                "Sauce Labs Backpack",
+                "Cart should contain the correct product"
         );
 
         Assert.assertEquals(
-            cartPage.getProductName(),
-            "Sauce Labs Backpack"
+                cartPage.getProductPrice(),
+                "$29.99",
+                "Backpack price should be $29.99"
         );
 
+        Assert.assertEquals(
+                cartPage.getProductQuantity(),
+                "1",
+                "Cart should contain one backpack"
+        );
+
+        // Proceed to checkout
         cartPage.clickCheckout();
 
+        // Enter customer information
         checkoutPage.enterCustomerDetails(
-            TestDataReader.get("checkout.firstname"),
-            TestDataReader.get("checkout.lastname"),
-            TestDataReader.get("checkout.postalcode")
+                TestDataReader.get("checkout.firstname"),
+                TestDataReader.get("checkout.lastname"),
+                TestDataReader.get("checkout.postalcode")
         );
 
         checkoutPage.clickContinue();
-        checkoutPage.clickFinish();
+
+        // Verify checkout overview page
+        Assert.assertTrue(
+                checkoutPage.isCheckoutOverviewDisplayed(),
+                "User should navigate to checkout overview"
+        );
+
+        // Verify checkout overview product details
+        Assert.assertEquals(
+                checkoutPage.getOverviewProductName(),
+                "Sauce Labs Backpack",
+                "Checkout overview should display the correct product"
+        );
 
         Assert.assertEquals(
-            checkoutPage.getConfirmationMessage(),
-            "Thank you for your order!"
+                checkoutPage.getOverviewProductPrice(),
+                "$29.99",
+                "Checkout overview should display the correct price"
+        );
+
+        Assert.assertEquals(
+                checkoutPage.getOverviewProductQuantity(),
+                "1",
+                "Checkout overview should display quantity 1"
+        );
+
+        // Complete checkout
+        checkoutPage.clickFinish();
+
+        // Verify order confirmation
+        Assert.assertEquals(
+                checkoutPage.getConfirmationMessage(),
+                "Thank you for your order!",
+                "Order confirmation message should be displayed"
         );
     }
 
-    // Test data for three negative checkout scenarios
     @DataProvider(name = "invalidCheckoutData")
     public Object[][] invalidCheckoutData() {
 
         String firstName =
-            TestDataReader.get("checkout.firstname");
+                TestDataReader.get("checkout.firstname");
 
         String lastName =
-            TestDataReader.get("checkout.lastname");
+                TestDataReader.get("checkout.lastname");
 
         String postalCode =
-            TestDataReader.get("checkout.postalcode");
+                TestDataReader.get("checkout.postalcode");
 
         return new Object[][] {
-
-            // Missing first name
-            {
-                "",
-                lastName,
-                postalCode,
-                "First Name is required"
-            },
-
-            // Missing last name
-            {
-                firstName,
-                "",
-                postalCode,
-                "Last Name is required"
-            },
-
-            // Missing postal code
-            {
-                firstName,
-                lastName,
-                "",
-                "Postal Code is required"
-            }
+                {
+                        "",
+                        lastName,
+                        postalCode,
+                        "First Name is required"
+                },
+                {
+                        firstName,
+                        "",
+                        postalCode,
+                        "Last Name is required"
+                },
+                {
+                        firstName,
+                        lastName,
+                        "",
+                        "Postal Code is required"
+                }
         };
     }
 
     @Test(
-        dataProvider = "invalidCheckoutData",
-        groups = {"ui", "negative"}
+            dataProvider = "invalidCheckoutData",
+            groups = {"ui", "negative"}
     )
     public void checkoutValidationTest(
             String firstName,
@@ -118,33 +159,32 @@ public class CheckoutTest extends BaseTest {
         inventoryPage.openCart();
 
         Assert.assertTrue(
-            page.url().contains("cart.html"),
-            "User should navigate to the cart page"
+                page.url().contains("cart.html"),
+                "User should navigate to the cart page"
         );
 
         // Navigate to checkout
         cartPage.clickCheckout();
 
-        // Enter test data from DataProvider
+        // Enter invalid checkout data
         checkoutPage.enterCustomerDetails(
-            firstName,
-            lastName,
-            postalCode
+                firstName,
+                lastName,
+                postalCode
         );
 
         checkoutPage.clickContinue();
 
-        // Verify user remains on checkout step one
+        // Verify checkout remains on step one
         Assert.assertTrue(
-            page.url().contains("checkout-step-one.html"),
-            "Checkout should remain on step one for invalid data"
+                page.url().contains("checkout-step-one.html"),
+                "Checkout should remain on step one for invalid data"
         );
 
-        // Verify the correct validation error
+        // Verify validation error
         Assert.assertTrue(
-            checkoutPage.getErrorMessage()
-                .contains(expectedError),
-            "Expected validation error: " + expectedError
+                checkoutPage.getErrorMessage().contains(expectedError),
+                "Expected validation error: " + expectedError
         );
     }
 }
