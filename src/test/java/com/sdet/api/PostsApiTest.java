@@ -3,6 +3,7 @@ package com.sdet.api;
 import com.sdet.clients.PostsApiClient;
 import com.sdet.specs.ApiSpecFactory;
 import com.sdet.payloads.PostPayload;
+import org.testng.annotations.DataProvider;
 
 import io.restassured.response.Response;
 
@@ -249,4 +250,40 @@ public class PostsApiTest {
                 "HTTP 500 instead of HTTP 400 for malformed JSON."
         );
     }
+
+    // ==========================================
+    // Boundary Testing - Invalid Resource IDs
+    // ==========================================
+
+    @DataProvider(name = "boundaryPostIds")
+    public Object[][] boundaryPostIds() {
+
+        return new Object[][] {
+                {0},
+                {-1}
+        };
+    }
+
+    @Test(
+            dataProvider = "boundaryPostIds",
+            groups = {"api", "negative", "boundary"}
+    )
+    public void getPostWithBoundaryIdTest(int postId) {
+
+        // Send GET request using boundary resource ID
+        Response response = client.getPost(postId);
+
+        // JSONPlaceholder returns 404 for missing posts
+        response.then()
+                .spec(ApiSpecFactory.responseSpec(404));
+
+        // Verify the API returns an empty JSON object
+        Assert.assertEquals(
+                response.getBody().asString().trim(),
+                "{}",
+                "Invalid post ID " + postId
+                        + " should return an empty JSON object"
+        );
+    }
+
 }

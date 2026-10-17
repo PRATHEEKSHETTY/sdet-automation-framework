@@ -32,4 +32,16 @@ public class CartPage {
     public void clickCheckout() {
         page.locator("[data-test='checkout']").click();
     }
+
+    // Remove Sauce Labs Backpack from cart
+    public void removeBackpackFromCart() {
+        page.locator(
+            "[data-test='remove-sauce-labs-backpack']"
+        ).click();
+    }
+
+    // Verify cart contains no products
+    public boolean isCartEmpty() {
+        return page.locator(".cart_item").count() == 0;
+    }
 }

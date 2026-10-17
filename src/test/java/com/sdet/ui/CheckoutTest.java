@@ -14,6 +14,10 @@ import org.testng.annotations.Test;
 
 public class CheckoutTest extends BaseTest {
 
+    // ==========================================
+    // 1. Positive Test - Successful Checkout
+    // ==========================================
+
     @Test(groups = {"ui", "smoke"})
     public void successfulCheckoutTest() {
 
@@ -66,13 +70,12 @@ public class CheckoutTest extends BaseTest {
 
         checkoutPage.clickContinue();
 
-        // Verify checkout overview page
+        // Verify checkout overview
         Assert.assertTrue(
                 checkoutPage.isCheckoutOverviewDisplayed(),
                 "User should navigate to checkout overview"
         );
 
-        // Verify checkout overview product details
         Assert.assertEquals(
                 checkoutPage.getOverviewProductName(),
                 "Sauce Labs Backpack",
@@ -101,6 +104,10 @@ public class CheckoutTest extends BaseTest {
                 "Order confirmation message should be displayed"
         );
     }
+
+    // ==========================================
+    // 2. Negative Tests - Required Field Validation
+    // ==========================================
 
     @DataProvider(name = "invalidCheckoutData")
     public Object[][] invalidCheckoutData() {
@@ -166,7 +173,7 @@ public class CheckoutTest extends BaseTest {
         // Navigate to checkout
         cartPage.clickCheckout();
 
-        // Enter invalid checkout data
+        // Enter invalid customer information
         checkoutPage.enterCustomerDetails(
                 firstName,
                 lastName,
@@ -187,4 +194,106 @@ public class CheckoutTest extends BaseTest {
                 "Expected validation error: " + expectedError
         );
     }
+
+    // ==========================================
+    // 3. Boundary Tests - Minimum Non-Empty Inputs
+    // ==========================================
+
+    @DataProvider(name = "boundaryCheckoutData")
+    public Object[][] boundaryCheckoutData() {
+
+        return new Object[][] {
+                {"A", "Shetty", "576101"},
+                {"Pratheek", "Shetty", "1"}
+        };
+    }
+
+    @Test(
+            dataProvider = "boundaryCheckoutData",
+            groups = {"ui", "regression", "boundary"}
+    )
+    public void checkoutBoundaryTest(
+            String firstName,
+            String lastName,
+            String postalCode) {
+
+        LoginPage loginPage = new LoginPage(page);
+        InventoryPage inventoryPage = new InventoryPage(page);
+        CartPage cartPage = new CartPage(page);
+        CheckoutPage checkoutPage = new CheckoutPage(page);
+
+        // Login
+        loginPage.login("standard_user", "secret_sauce");
+
+        // Add product to cart
+        inventoryPage.addBackpackToCart();
+        inventoryPage.openCart();
+
+        // Verify correct product
+        Assert.assertEquals(
+                cartPage.getProductName(),
+                "Sauce Labs Backpack",
+                "Cart should contain the correct product"
+        );
+
+        // Navigate to checkout
+        cartPage.clickCheckout();
+
+        // Enter boundary-value inputs
+        checkoutPage.enterCustomerDetails(
+                firstName,
+                lastName,
+                postalCode
+        );
+
+        checkoutPage.clickContinue();
+
+        // Verify checkout proceeds successfully
+        Assert.assertTrue(
+                checkoutPage.isCheckoutOverviewDisplayed(),
+                "Checkout should proceed for boundary input: "
+                        + firstName + ", " + postalCode
+        );
+    }
+
+    // ==========================================
+    // Critical Business Scenario - Remove Product
+    // ==========================================
+
+    @Test(groups = {"ui", "regression"})
+    public void removeProductFromCartTest() {
+
+        LoginPage loginPage = new LoginPage(page);
+        InventoryPage inventoryPage = new InventoryPage(page);
+        CartPage cartPage = new CartPage(page);
+
+        // Step 1: Login
+        loginPage.login("standard_user", "secret_sauce");
+
+        // Step 2: Add backpack to cart
+        inventoryPage.addBackpackToCart();
+        inventoryPage.openCart();
+
+        // Step 3: Verify product was added
+        Assert.assertEquals(
+                cartPage.getProductName(),
+                "Sauce Labs Backpack",
+                "Cart should contain Sauce Labs Backpack"
+        );
+
+        Assert.assertFalse(
+                cartPage.isCartEmpty(),
+                "Cart should contain a product before removal"
+        );
+
+        // Step 4: Remove backpack from cart
+        cartPage.removeBackpackFromCart();
+
+        // Step 5: Verify cart is empty
+        Assert.assertTrue(
+                cartPage.isCartEmpty(),
+                "Cart should be empty after removing the backpack"
+        );
+    }
+
 }

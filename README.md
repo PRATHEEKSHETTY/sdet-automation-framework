@@ -36,7 +36,7 @@ UI tests create a new Playwright browser, context and page during setup and clos
 
 ## Test Coverage
 
-### UI — 6 executions
+### UI — 9 executions
 
 | Scenario | Category |
 |---|---|
@@ -46,10 +46,14 @@ UI tests create a new Playwright browser, context and page during setup and clos
 | Checkout with missing first name | Negative |
 | Checkout with missing last name | Negative |
 | Checkout with missing postal code | Negative |
+| Checkout with single-character first name | Boundary |
+| Checkout with single-character postal code | Boundary |
+| Product removal and empty-cart verification | Critical business scenario |
 
-The three checkout validation cases are executed through a TestNG `@DataProvider`.
+The three required-field validation cases and two boundary-value
+cases are executed using TestNG `@DataProvider`.
 
-### API — 8 executions
+### API — 10 executions
 
 | Scenario | Expected behavior |
 |---|---|
@@ -61,6 +65,9 @@ The three checkout validation cases are executed through a TestNG `@DataProvider
 | GET nonexistent post | HTTP 404 |
 | POST missing fields | JSONPlaceholder accepts request with HTTP 201 |
 | POST malformed JSON | Observed HTTP 500 with syntax-error response |
+| GET post with ID 0 | HTTP 404 |
+| GET post with ID -1 | HTTP 404 |
+
 
 **API limitation:** JSONPlaceholder is a fake REST API. Write operations are simulated and do not permanently modify server data. Its acceptance of missing fields and its response to malformed JSON are **characterization tests**, not proof of appropriate production input validation. The malformed-JSON response may change if the service changes.
 
@@ -101,8 +108,9 @@ Execute grouped suites:
 | Suite | Command | Last verified executions |
 |---|---|---:|
 | Smoke | `mvn clean test -Dsurefire.suiteXmlFiles=testng-smoke.xml` | 4 |
-| Regression | `mvn clean test -Dsurefire.suiteXmlFiles=testng-regression.xml` | 3 |
-| Negative | `mvn clean test -Dsurefire.suiteXmlFiles=testng-negative.xml` | 7 |
+| Regression | `mvn clean test -Dsurefire.suiteXmlFiles=testng-regression.xml` | 6 |
+| Negative | `mvn clean test -Dsurefire.suiteXmlFiles=testng-negative.xml` | 9 |
+
 
 The group suites select tests using TestNG group annotations. Group totals overlap; they must not be added to infer total unique tests.
 
@@ -139,21 +147,24 @@ Because the `target/` directory is typically ignored by Git, include **sample te
 
 ## Latest Verified Results
 
-Full suite executed on **17 October 2026**, using class-level parallel execution:
+Full suite executed on **17 October 2026** using
+class-level parallel execution.
 
 | Metric | Result |
 |---|---|
-| UI test executions | 6 |
-| API test executions | 8 |
-| Total executions | **14** |
-| Passed | **14** |
+| UI test executions | 9 |
+| API test executions | 10 |
+| Total executions | **19** |
+| Passed | **19** |
 | Failed | **0** |
 | Errors | **0** |
 | Skipped | **0** |
 | Maven result | **BUILD SUCCESS** |
-| Total build time | **16.542 seconds** |
+| Total build time | **20.449 seconds** |
 
-The independently executed smoke, regression and negative suites also passed with 4, 3 and 7 executions respectively.
+The independently executed smoke, regression, and negative suites passed with 4, 6, and 9 test executions respectively.
+
+All grouped suites completed successfully with zero failures.
 
 ## Design Decisions
 
